@@ -15,7 +15,7 @@
   })();
   </script>
   <!-- href rewritten to hashed app.*.css by web/scripts/copy-to-data.mjs -->
-  <link rel="stylesheet" href="./app.ff701078.css">
+  <link rel="stylesheet" href="./app.03a0e74f.css">
 </head>
 <body>
   <div class="app">
@@ -230,7 +230,7 @@
         deleteBtn.textContent = 'Delete';
         deleteBtn.onclick = function () {
           if (!confirm('Delete "' + file.name + '"?')) return;
-          fetch('sdrm.html?file=' + encodeURIComponent(pdir + file.name))
+          fetch('sdrm.html?file=' + encodeURIComponent(pdir + file.name), { method: 'POST', credentials: 'same-origin' })
             .then(function (resp) {
               if (resp.ok) row.remove();
               else alert('Delete failed.');

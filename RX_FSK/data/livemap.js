@@ -69,6 +69,16 @@ function domReady(fn) {
   }
 }
 
+function fetchTimeout(ms) {
+  if (typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function') {
+    return AbortSignal.timeout(ms);
+  }
+  if (typeof AbortController === 'undefined') return undefined;
+  var controller = new AbortController();
+  setTimeout(function () { controller.abort(); }, ms);
+  return controller.signal;
+}
+
 domReady(function () {
   if (typeof L === 'undefined') {
     livemapCdnFallback();
@@ -239,7 +249,7 @@ domReady(function () {
 
   function fetchBasemapsConfig(done) {
     function tryUrl(url, next) {
-      fetch(url, { signal: AbortSignal.timeout(4000) })
+      fetch(url, { signal: fetchTimeout(4000) })
         .then(function (response) {
           if (!response.ok) throw new Error(response.status);
           return response.json();
@@ -1036,7 +1046,7 @@ domReady(function () {
 
     if (last_data && last_data.lat != '0.000000') {
       var footer = document.querySelector('.leaflet-footer');
-      if (footer.style.display === 'none') footer.style.display = 'block';
+      footer.style.display = 'block';
       var distance = Math.round(map.distance(gps_location, [last_data.lat, last_data.lon]));
       distance = (distance > 1000) ? (distance / 1000) + 'k' : distance;
       document.querySelector('.leaflet-footer .gps_dist').textContent = distance;
@@ -1066,7 +1076,7 @@ domReady(function () {
   };
 
   get_data = function () {
-    fetch('live.json', { signal: AbortSignal.timeout(1000) })
+    fetch('live.json', { signal: fetchTimeout(1000) })
       .then(function (response) {
         if (!response.ok) throw new Error(response.status);
         return response.json();
